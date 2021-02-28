@@ -28,7 +28,7 @@ public class UserDAO implements UserDAOImpl {
         Root<UsersDataSet> root = criteriaQuery.from(UsersDataSet.class);
         criteriaQuery.select(root);
         criteriaQuery.where(criteriaBuilder.equal(root.get("login"),login));
-        return session.createQuery(criteriaQuery).getSingleResult();
+        return session.createQuery(criteriaQuery).uniqueResult();
     }
 
     @Override
@@ -38,7 +38,7 @@ public class UserDAO implements UserDAOImpl {
         Root<SessionsDataSet> root = criteriaQuery.from(SessionsDataSet.class);
         criteriaQuery.select(root.get("owner"));
         criteriaQuery.where(criteriaBuilder.equal(root.get("owner"),sessionId));
-        return session.createQuery(criteriaQuery).getSingleResult();
+        return session.createQuery(criteriaQuery).uniqueResult();
     }
 
 }

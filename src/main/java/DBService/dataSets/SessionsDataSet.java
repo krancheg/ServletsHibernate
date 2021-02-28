@@ -18,7 +18,6 @@ public class SessionsDataSet {
     private UsersDataSet owner;
 
     public SessionsDataSet() {
-
     }
 
     public SessionsDataSet(String sessionId, UsersDataSet usersDataSet) {

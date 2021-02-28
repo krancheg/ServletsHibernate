@@ -5,6 +5,7 @@ import DBService.dao.SessionDAO;
 import DBService.dao.SessionDAOImpl;
 import DBService.dao.UserDAO;
 import DBService.dao.UserDAOImpl;
+import DBService.dataSets.SessionsDataSet;
 import DBService.dataSets.UsersDataSet;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -86,6 +87,7 @@ public class DBSevice implements UserDAOImpl, SessionDAOImpl {
     private Configuration getH2Configuration() {
         Configuration configuration = new Configuration();
         configuration.addAnnotatedClass(UsersDataSet.class);
+        configuration.addAnnotatedClass(SessionsDataSet.class);
 
         configuration.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
         configuration.setProperty("hibernate.connection.driver_class", "org.h2.Driver");

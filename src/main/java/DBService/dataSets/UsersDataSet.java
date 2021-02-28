@@ -20,10 +20,10 @@ public class UsersDataSet implements Serializable {
     @Column(name = "pass")
     private String pass;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
-    @OneToOne(optional = false, cascade = CascadeType.ALL)
+    @OneToOne(optional = true, cascade = CascadeType.ALL)
     @JoinColumn(name = "session_id")
     private SessionsDataSet session;
 
@@ -39,6 +39,9 @@ public class UsersDataSet implements Serializable {
         this.login = login;
         this.pass = login;
         this.email = login;
+    }
+
+    public UsersDataSet() {
     }
 
     public long getId() { return id; }

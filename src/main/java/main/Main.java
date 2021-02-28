@@ -18,7 +18,6 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         DBSevice accountService = new DBSevice();
-        accountService.cleanAllTables();
         accountService.addNewUser(new UsersDataSet("admin"));
         accountService.addNewUser(new UsersDataSet("test"));
 
