@@ -1,8 +1,7 @@
 package servlets;
 
 import DBService.DBSevice;
-import accounts.AccountService;
-import accounts.UserProfile;
+import DBService.dataSets.UsersDataSet;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -36,8 +35,8 @@ public class SignInServlet extends HttpServlet {
             return;
         }
 
-        UserProfile userProfile = accountService.getUserByLogin(login);
-        if (userProfile!=null && userProfile.getPass().equals(pass)) {
+        UsersDataSet usersDataSet = accountService.getUserByLogin(login);
+        if (usersDataSet !=null && usersDataSet.getPass().equals(pass)) {
             response.setContentType("text/html;charset=utf-8");
             response.getWriter().println("Authorized: "+login);
             response.setStatus(HttpServletResponse.SC_OK);

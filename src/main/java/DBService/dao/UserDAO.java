@@ -1,90 +1,44 @@
 package DBService.dao;
 
-import DBService.executor.Executor;
-import accounts.Account;
-import accounts.UserProfile;
+import DBService.dataSets.SessionsDataSet;
+import org.hibernate.Session;
+import DBService.dataSets.UsersDataSet;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 
-public class UserDAO implements Account {
+public class UserDAO implements UserDAOImpl {
 
-    private Executor executor;
+    private Session session;
 
-    public UserDAO(Connection connection) {
-        this.executor = new Executor(connection);
+    public UserDAO(Session session) {
+        this.session = session;
     }
 
     @Override
-    public void addNewUser(UserProfile userProfile) throws SQLException {
-        String query = String.format("insert into users (login, pass, email) values ('%s','%s','%s')",
-                userProfile.getLogin(),
-                userProfile.getPass(),
-                userProfile.getEmail());
-        executor.execUpdate(query);
+    public long addNewUser(UsersDataSet usersDataSet) {
+        return (Long) session.save(usersDataSet);
     }
 
     @Override
-    public UserProfile getUserByLogin(String login) throws SQLException {
-        String query = String.format("select * from users where login='%s'",login);
-        return executor.executeQuery(query,resultSet -> {
-            if (resultSet.next()) {
-                return new UserProfile(resultSet.getString("login"),
-                        resultSet.getString("pass"), resultSet.getString("email"));
-            } else return null;
-        });
+    public UsersDataSet getUserByLogin(String login) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<UsersDataSet> criteriaQuery = criteriaBuilder.createQuery(UsersDataSet.class);
+        Root<UsersDataSet> root = criteriaQuery.from(UsersDataSet.class);
+        criteriaQuery.select(root);
+        criteriaQuery.where(criteriaBuilder.equal(root.get("login"),login));
+        return session.createQuery(criteriaQuery).getSingleResult();
     }
 
     @Override
-    public UserProfile getUserBySessionId(String sessionId) throws SQLException {
-        String query = String.format("select * from sessions left join users " +
-                "on sessions.user_id = users.id where sessions.id=%d",sessionId);
-        return executor.executeQuery(query,resultSet -> {
-            resultSet.next();
-            return new UserProfile(resultSet.getString("login"),
-                    resultSet.getString("pass"), resultSet.getString("email"));
-        });
+    public UsersDataSet getUserBySessionId(String sessionId) {
+        CriteriaBuilder criteriaBuilder = session.getCriteriaBuilder();
+        CriteriaQuery<UsersDataSet> criteriaQuery = criteriaBuilder.createQuery(UsersDataSet.class);
+        Root<SessionsDataSet> root = criteriaQuery.from(SessionsDataSet.class);
+        criteriaQuery.select(root.get("owner"));
+        criteriaQuery.where(criteriaBuilder.equal(root.get("owner"),sessionId));
+        return session.createQuery(criteriaQuery).getSingleResult();
     }
 
-    @Override
-    public void addSession(String sessionId, UserProfile userProfile) throws SQLException {
-        Long id = getIdByLogin(userProfile.getLogin());
-        if (id == -1) {
-            addNewUser(userProfile);
-            id = getIdByLogin(userProfile.getLogin());
-        }
-        String query = String.format("insert into sessions (user_id) values (%d)",id);
-        executor.execUpdate(query);
-    }
-
-    @Override
-    public void deleteSession(String sessionId) throws SQLException {
-        String query = String.format("delete from sessions where id=%d",sessionId);
-        executor.execUpdate(query);
-    }
-
-    /*
-    Return id of user by login,
-    if id of user not found, return -1
-     */
-    private Long getIdByLogin(String login) throws SQLException {
-        String query = String.format("select * from users where login='%s'",login);
-        return (Long) executor.executeQuery(query, resultSet -> {
-            if (resultSet.next()) {
-                resultSet.next();
-                return resultSet.getLong("id");
-            } else return -1;
-        });
-    }
-
-    public void createTables() throws SQLException {
-        executor.execUpdate("create table if not exists users (id bigint auto_increment, " +
-                "login varchar(256), pass varchar(256), email varchar(256), primary key (id))");
-        executor.execUpdate("create table if not exists sessions (id bigint auto_increment, user_id bigint, primary key (id))");
-    }
-
-    public void dropTables() throws SQLException {
-        executor.execUpdate("drop table if exists users");
-        executor.execUpdate("drop table if exists sessions");
-    }
 }

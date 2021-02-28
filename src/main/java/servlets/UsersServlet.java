@@ -1,7 +1,6 @@
 package servlets;
 
 import DBService.DBSevice;
-import accounts.AccountService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

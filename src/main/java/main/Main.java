@@ -1,8 +1,7 @@
 package main;
 
 import DBService.DBSevice;
-import accounts.AccountService;
-import accounts.UserProfile;
+import DBService.dataSets.UsersDataSet;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.HandlerList;
@@ -18,16 +17,10 @@ import servlets.SignUpServlet;
 public class Main {
     public static void main(String[] args) throws Exception {
 
-        /*
-        AccountService accountService = new AccountService();
-        accountService.addNewUser(new UserProfile("admin"));
-        accountService.addNewUser(new UserProfile("test"));
-        */
-
         DBSevice accountService = new DBSevice();
         accountService.cleanAllTables();
-        accountService.addNewUser(new UserProfile("admin"));
-        accountService.addNewUser(new UserProfile("test"));
+        accountService.addNewUser(new UsersDataSet("admin"));
+        accountService.addNewUser(new UsersDataSet("test"));
 
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.addServlet(new ServletHolder(new UsersServlet(accountService)), "/api/v1/users");

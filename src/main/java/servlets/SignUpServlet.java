@@ -1,8 +1,7 @@
 package servlets;
 
 import DBService.DBSevice;
-import accounts.AccountService;
-import accounts.UserProfile;
+import DBService.dataSets.UsersDataSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -37,7 +36,7 @@ public class SignUpServlet extends HttpServlet {
             return;
         }
 
-        accountService.addNewUser(new UserProfile(login,pass,login));
+        accountService.addNewUser(new UsersDataSet(login,pass,login));
         response.setContentType("text/html;charset=utf-8");
         response.setStatus(HttpServletResponse.SC_OK);
 
